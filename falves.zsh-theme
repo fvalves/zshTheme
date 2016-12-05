@@ -21,13 +21,13 @@ local privilege="%(!.#.$)"
 local ret_status="%(?:%{$Gb%}$privilege :%{$Rb%}$privilege )"
 
 # Return error code on failure
-local return_code="%(?..%{$Rb%}%? ←%{$RESET%})"
+local return_code="%(?..%{$Rb%}%? ↵%{$RESET%})"
 RPS1="${return_code}"
 
 # Format for remote_status()
 ZSH_THEME_GIT_PROMPT_AHEAD="%{$Bb%} ↑"
 ZSH_THEME_GIT_PROMPT_BEHIND="%{$Y%} ↓"
-ZSH_THEME_GIT_PROMPT_DIVERGED="%{$Y%} ≠"
+ZSH_THEME_GIT_PROMPT_DIVERGED="%{$Y%} ↯"
 
 # Remote status for git
 remote_status() {
@@ -67,11 +67,11 @@ function custom_git_prompt() {
 	# Git info
 	ZSH_THEME_GIT_PROMPT_PREFIX="%{$B%}(${branch_color}"
 	ZSH_THEME_GIT_PROMPT_SUFFIX="$(remote_status)%{$B%})%{$RESET%} "
-	ZSH_THEME_GIT_PROMPT_DIRTY=" %{$Y%}X"
+	ZSH_THEME_GIT_PROMPT_DIRTY=" %{$Y%}✗"
 	ZSH_THEME_GIT_PROMPT_CLEAN=""
 	echo "$(git_prompt_info)"
 }
 
 # Full prompt
-PROMPT='%{$G%}%n%{$Yb%}@%{$R%}home %{$C%}${PWD/#$HOME/~} $(custom_git_prompt)${ret_status}%{$RESET%}'
+PROMPT='%{$G%}%n%{$Yb%}@%{$R%}%m %{$C%}${PWD/#$HOME/~} $(custom_git_prompt)${ret_status}%{$RESET%}'
 
