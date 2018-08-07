@@ -1,0 +1,1 @@
+/home/alves/git/vim-urscript/syntax/urscript.vim

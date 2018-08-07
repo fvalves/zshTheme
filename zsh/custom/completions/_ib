@@ -1,0 +1,29 @@
+#compdef ib.sh
+#autoload
+
+compadd \
+    'deps' \
+    'deps-no-ros' \
+    'ros' \
+    'all' \
+    'am-utils' \
+    'urdfdom' \
+    'moveit-stage1' \
+    'ecto' \
+    'am-curve_importer' \
+    'rviz' \
+    'am-core' \
+    'am-gui' \
+    'am-hal' \
+    'am-graphcompiler' \
+    'am-editor' \
+    'am-configuration' \
+    'moveit-stage2' \
+    'am-robots' \
+    'am-crashreport' \
+    'am-documentation' \
+    'am-gui-media' \
+    'am-testing' \
+    'am-cloud_connector' \
+    'am-testing' \
+    'buildtest'

@@ -1,0 +1,7 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =5
+let g:netrw_dirhist_1='/home/alves/.config/Trolltech'
+let g:netrw_dirhist_2='/home/alves/software/artiminds/vtk/CMake'
+let g:netrw_dirhist_3='/home/alves/software/artiminds/am-gui/rvizTools/src/ros_test_helper'
+let g:netrw_dirhist_4='/home/alves/software/artiminds/ros/src/catkin'
+let g:netrw_dirhist_5='/home/alves/.oh-my-zsh/completions'
