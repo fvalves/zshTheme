@@ -1,0 +1,50 @@
+" Hard mode
+" noremap <Up> <NOP>
+" noremap <Down> <NOP>
+" noremap <Left> <NOP>
+" noremap <Right> <NOP>
+noremap h <NOP>
+noremap l <NOP>
+"noremap h oINROP_DEBUG_F("",);<esc>hhhi
+"noremap l oINROP_DEBUG("");<esc>hhi
+"noremap k <NOP>
+"noremap j <NOP>
+noremap j /^\s*\{<cr>
+noremap k ?^\s*\{<cr>
+noremap <cr> j
+
+" Insert #include preprocessor command
+map <c-i> o#include <><Left>
+
+" Insert comment for method header
+map <f2> o/*<cr><esc><esc>bba \brief<space>
+
+" Rearrange namespace (disabled as it is too dangerous, TODO: make it safe)
+"map <f3> /\/\* namespace<cr>ddGp:%s/inrop:://g<cr>
+
+" if[-else] skeleton
+map <f4> oif ()<cr>{<cr><esc>?\(<cr>a
+map <s-f4> oif ()<cr>{<cr><esc>oelse<cr>{<cr><esc>?\(<cr>a
+
+" for skeleton
+map <f5> ofor ()<cr>{<cr><esc>?\(<cr>a
+
+" Typical debug functions
+noremap <f6> oINROP_DEBUG_F("", );<esc>4hi
+noremap <s-f6> oINROP_DEBUG("");<esc>2hi
+
+" Typical debug functions (advanced)
+noremap <f7> oINROP_DEBUG_F("", );<esc>5hmm?^[^\s]+ *[^\s:]+::[^\s(]+ *\(<cr>f(bbbvf(f(hy`mpf"i:<space>
+noremap <s-f7> oINROP_DEBUG("");<esc>3hmm?^[^\s]+ *[^\s:]+::[^\s(]+ *\(<cr>f(bbbyvf(f(hy`mpf"i:<space>
+
+" Typical struct typedef
+noremap <s-f8> otypedef<space>struct<cr>{<cr><esc>o<esc>?;<cr>i<space>
+
+" Typical enum typedef
+noremap <f8> otypedef<space>enum<cr>{<cr><esc>o<esc>?;<cr>i<space>
+
+" Move opening brackets to their own lines
+map <f11> :g/^.*[^\s].*\{$/s/\{$/\n{/<cr>
+
+" Incremental search
+set incsearch
