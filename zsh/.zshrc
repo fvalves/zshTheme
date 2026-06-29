@@ -1,5 +1,5 @@
 # Path to your oh-my-zsh installation.
-  export ZSH=/home/alves/.oh-my-zsh
+  export ZSH=~/.oh-my-zsh
 
 # Path to custom completions
 export fpath=(~/.oh-my-zsh/custom/completions $fpath)
