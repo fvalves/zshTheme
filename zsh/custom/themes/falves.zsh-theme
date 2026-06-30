@@ -1,77 +1,66 @@
 # FAlves Theme
 # Shamelessly hacked from kafeitu and Sunrise
 
-# Color shortcuts
-R=$fg_no_bold[red]
-Rb=$fg_bold[red]
-C=$fg_no_bold[cyan]
-Cb=$fg_bold[cyan]
-G=$fg_no_bold[green]
-Gb=$fg_bold[green]
-M=$fg_no_bold[magenta]
-Mb=$fg_bold[magenta]
-Y=$fg_no_bold[yellow]
-Yb=$fg_bold[yellow]
-B=$fg_no_bold[blue]
-Bb=$fg_bold[blue]
-RESET=$reset_color
+ZSH_THEME_GIT_PROMPT_AHEAD=" ↑"
+ZSH_THEME_GIT_PROMPT_BEHIND=" ↓"
+ZSH_THEME_GIT_PROMPT_DIVERGED=" ↯"
 
-# Return status as $ or #
-local privilege="%(!.#.$)"
-local ret_status="%(?:%{$Gb%}$privilege :%{$Rb%}$privilege )"
-
-# Return error code on failure
-local return_code="%(?..%{$Rb%}%? ↵%{$RESET%})"
-RPS1="${return_code}"
-
-# Format for remote_status()
-ZSH_THEME_GIT_PROMPT_AHEAD="%{$Bb%} ↑"
-ZSH_THEME_GIT_PROMPT_BEHIND="%{$Y%} ↓"
-ZSH_THEME_GIT_PROMPT_DIVERGED="%{$Y%} ↯"
-
-# Remote status for git
-remote_status() {
-  INDEX=$(command git status --porcelain -b 2> /dev/null)
-  STATUS=""
-  if $(echo "$INDEX" | grep '^## .*ahead' &> /dev/null); then
-    STATUS="$ZSH_THEME_GIT_PROMPT_AHEAD$STATUS"
+function _falves_remote_status() {
+  local index remote_st
+  index=$(command git status --porcelain -b 2>/dev/null)
+  remote_st=""
+  if echo "$index" | grep -q '^## .*ahead.*behind'; then
+    remote_st="%{$fg_bold[yellow]%}${ZSH_THEME_GIT_PROMPT_DIVERGED}"
+  else
+    if echo "$index" | grep -q '^## .*ahead'; then
+      remote_st="%{$fg_bold[blue]%}${ZSH_THEME_GIT_PROMPT_AHEAD}"
+    fi
+    if echo "$index" | grep -q '^## .*behind'; then
+      remote_st="${remote_st}%{$fg_bold[yellow]%}${ZSH_THEME_GIT_PROMPT_BEHIND}"
+    fi
   fi
-  if $(echo "$INDEX" | grep '^## .*behind' &> /dev/null); then
-    STATUS="$ZSH_THEME_GIT_PROMPT_BEHIND$STATUS"
-  fi
-  if $(echo "$INDEX" | grep '^## .*ahead* .*behind' &> /dev/null); then
-    STATUS=""
-    STATUS="$ZSH_THEME_GIT_PROMPT_DIVERGED$STATUS"
-  fi
-  echo $STATUS
+  echo "$remote_st"
 }
 
-#Assigns a color to a given branch name
-function color_from_branch_name()
-{
-        if [ "$1" = "develop" ]; then
-                echo "%{$Gb%}"
-        elif [ "$1" = "master" ]; then
-                echo "%{$Cb%}"
-        else
-                echo "%{$Mb%}"
-        fi
-} 
-
-# Custom git prompt (match branch colors from listing tool)
-function custom_git_prompt() {
-	# Define custom branch color
-	local branch=$(git symbolic-ref --short -q HEAD 2> /dev/null) || branch="??"
-	
-	local branch_color=$(color_from_branch_name "$branch")
-	# Git info
-	ZSH_THEME_GIT_PROMPT_PREFIX="%{$B%}(${branch_color}"
-	ZSH_THEME_GIT_PROMPT_SUFFIX="$(remote_status)%{$B%})%{$RESET%} "
-	ZSH_THEME_GIT_PROMPT_DIRTY=" %{$Y%}✗"
-	ZSH_THEME_GIT_PROMPT_CLEAN=""
-	echo "$(git_prompt_info)"
+function _falves_branch_color() {
+  if [ "$1" = "develop" ]; then
+    echo "%{$fg_bold[green]%}"
+  elif [ "$1" = "master" ] || [ "$1" = "main" ]; then
+    echo "%{$fg_bold[cyan]%}"
+  else
+    echo "%{$fg_bold[magenta]%}"
+  fi
 }
 
-# Full prompt
-PROMPT='%{$G%}%n%{$Yb%}@%{$R%}%m %{$C%}${PWD/#$HOME/~} $(custom_git_prompt)${ret_status}%{$RESET%}'
+# Update git prompt variables before each prompt draw so the literal
+# $(git_prompt_info) in PROMPT picks them up with the right colors.
+function _falves_precmd() {
+  local branch branch_color
+  branch=$(git symbolic-ref --short -q HEAD 2>/dev/null)
+  if [[ -n "$branch" ]]; then
+    branch_color=$(_falves_branch_color "$branch")
+    ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_no_bold[blue]%}(${branch_color}"
+    ZSH_THEME_GIT_PROMPT_SUFFIX="$(_falves_remote_status)%{$fg_no_bold[blue]%})%{$reset_color%} "
+    ZSH_THEME_GIT_PROMPT_DIRTY=" %{$fg_bold[yellow]%}✗"
+    ZSH_THEME_GIT_PROMPT_CLEAN=""
+  else
+    ZSH_THEME_GIT_PROMPT_PREFIX=""
+    ZSH_THEME_GIT_PROMPT_SUFFIX=""
+    ZSH_THEME_GIT_PROMPT_DIRTY=""
+    ZSH_THEME_GIT_PROMPT_CLEAN=""
+  fi
+}
 
+add-zsh-hook precmd _falves_precmd
+
+function _ret_status() {
+  local privilege="%(!.#.$)"
+  echo "%(?:%{$fg_bold[green]%}${privilege} :%{$fg_bold[red]%}${privilege} )"
+}
+
+function _return_code() {
+  echo "%(?..%{$fg_bold[red]%}%? ↵%{$reset_color%})"
+}
+
+RPS1='$(_return_code)'
+PROMPT='%{$fg_no_bold[green]%}%n%{$fg_bold[yellow]%}@%{$fg_no_bold[red]%}%m %{$fg_no_bold[cyan]%}${PWD/#$HOME/~} $(git_prompt_info)$(_ret_status)%{$reset_color%}'
